@@ -1,0 +1,30 @@
+{
+    "app": "npx ts-node --prefer-ts-exts bin/data-streaming.ts",
+    "context": {
+      "streamName": "demo-stream",
+      "deliveryStreamName": "delivery-stream",
+      "region": "us-east-1"
+    },
+    "watch": {
+      "include": [
+        "**"
+      ],
+      "exclude": [
+        "README.md",
+        "cdk*.json",
+        "**/*.d.ts",
+        "**/*.js",
+        "tsconfig.json",
+        "package*.json",
+        "yarn.lock",
+        "node_modules",
+        "test"
+      ]
+    },
+    "commandHooks": {
+      "predeploy": "npm run build"
+    },
+    "scripts": {
+      "build": "tsc"
+    }
+}
