@@ -4,7 +4,7 @@ import random
 import time
 
 kinesis_client = boto3.client('kinesis', region_name='us-east-1')
-data_steam = 'demo-stream'
+data_stream = 'demo-stream'
 
 def lambda_handler(event, context):
     while True:
@@ -15,7 +15,7 @@ def lambda_handler(event, context):
         }
         print(data)
         response = kinesis_client.put_record(
-            StreamName=stream_name,
+            StreamName=data_stream,
             Data=json.dumps(data),
             PartitionKey=str(data['sensor_id'])
         )
