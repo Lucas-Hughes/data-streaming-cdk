@@ -4,4 +4,8 @@ import { DataStreamingStack } from '../lib/data-streaming-stack';
 
 const app = new cdk.App();
 
-new DataStreamingStack(app, 'DataStreamingStack');
+new DataStreamingStack(app, 'DataStreamingStack', {
+    tags: {
+        Project_ID: "Demo_Project"
+    }
+});
