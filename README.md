@@ -1,12 +1,27 @@
-# Welcome to your CDK TypeScript Construct Library project
+Data Streaming CDK Stack
 
-You should explore the contents of this project. It demonstrates a CDK Construct Library that includes a construct (`DataSteamingCdk`)
-which contains an Amazon SQS queue that is subscribed to an Amazon SNS topic.
+This AWS Cloud Development Kit (CDK) stack provides a serverless solution for generating, transforming, and delivering streaming data to Amazon S3.
+Description
 
-The construct defines an interface (`DataSteamingCdkProps`) to configure the visibility timeout of the queue.
+The stack consists of several AWS resources, including:
 
-## Useful commands
+    Kinesis Data Stream
+    Kinesis Data Firehose Delivery Stream
+    S3 Bucket
+    Lambda Functions
+    IAM Roles and Policies
 
-* `npm run build`   compile typescript to js
-* `npm run watch`   watch for changes and compile
-* `npm run test`    perform the jest unit tests
+A Lambda function generates random temperature data and sends it to the Kinesis data stream. The data is then transformed by a Lambda function in the Kinesis Data Firehose delivery stream, which queries an external API for weather data from Jacksonville and appends the response to the original data. The transformed data is then delivered to an S3 bucket using Kinesis Data Firehose.
+How to Set Up the CDK Project
+
+    Clone the repository: git clone <repository-url>
+    Navigate to the project directory: cd <project-folder>
+    Install dependencies: npm install
+    Build the project: npm run build
+    Deploy the stack: cdk deploy
+
+Requirements
+
+    AWS CLI
+    Node.js (v10.3.0 or later)
+    AWS CDK (v1.92.0 or later)
