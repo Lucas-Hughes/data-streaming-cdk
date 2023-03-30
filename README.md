@@ -16,9 +16,16 @@ The stack consists of the following resources:
 
 This project uses Leapp to authenticate to AWS. I utilized AWS SSO to assume a role in my demo account, but it can also use SAML. - https://docs.leapp.cloud/latest/installation/install-leapp/#
 
-To use this CDK stack:
+To use this CDK stack on Linux Envs:
 
 1. Clone this repository using `git clone git@gitlab.com:lucas-test-project/aws/data-steaming-cdk.git`
+1. Install node.js and npm: (if you have these, skip to step 3)
+    1. `sudo apt install curl`
+    1. `curl https://raw.githubusercontent.com/creationix/nvm/master/install.sh | bash`
+    1. `source ~/.bashrc`
+    1. `nvm install node` (this step installs node.js and npm)
+
+1. Install Typescript: `npm install -g typescript`
 1. Install dependencies: `npm install`
 1. Compile the typescript code to js: `npm run build`
 1. Autheticate to AWS using aws-runas, leapp, or method of choice
