@@ -37,3 +37,9 @@ To use this CDK stack on Linux Envs:
 Once the stack is deployed, the Lambda (generator) function will run every 60 seconds and generate data, which will be sent to the Kinesis data stream.
 
 The Lambda (firehose) function will transform the data received from Kinesis Firehose and add additional data retrieved from an external API. The transformed data will then be delivered to the S3 bucket via Kinesis Firehose.
+
+## Testing
+
+To utilize the testing, please run the following command from the `/data-streaming-cdk` directory.
+
+Run `npm test` - this will run the unit test against the Kinesis Firehose Delivery Stream to ensure that the stack contains and creates that resoruce with the name 'firehose-delivery-stream'.
