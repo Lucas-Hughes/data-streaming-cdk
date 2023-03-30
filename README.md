@@ -18,18 +18,21 @@ This project uses Leapp to authenticate to AWS. I utilized AWS SSO to assume a r
 
 To use this CDK stack on Linux Envs:
 
-1. Clone this repository using `git clone git@gitlab.com:lucas-test-project/aws/data-steaming-cdk.git`
-1. Install node.js and npm: (if you have these, skip to step 3)
+1. Clone this repository: `git clone git@gitlab.com:lucas-test-project/aws/data-steaming-cdk.git`
+2. Change into directory: `cd data-streaming-cdk/`
+3. Install pip: `sudo apt install python3-pip`
+4. Install boto3: `pip install boto3`
+5. Install node.js and npm: (if you have these, skip to step 3)
     1. `sudo apt install curl`
     1. `curl https://raw.githubusercontent.com/creationix/nvm/master/install.sh | bash`
     1. `source ~/.bashrc`
     1. `nvm install node` (this step installs node.js and npm)
-1. Install CDK: `npm install aws-cdk-lib`
-1. Install Typescript: `npm install -g typescript`
-1. Install dependencies: `npm install`
-1. Compile the typescript code to js: `npm run build`
-1. Autheticate to AWS using aws-runas, leapp, or method of choice
-1. Deploy the stack: `cdk deploy`
+6. Install CDK: `npm install aws-cdk-lib`
+7. Install Typescript: `npm install -g typescript`
+8. Install dependencies: `npm install`
+9. Compile the typescript code to js: `npm run build`
+10. Autheticate to AWS using aws-runas, leapp, or method of choice
+11. Deploy the stack: `cdk deploy`
 
 
 ## Usage
