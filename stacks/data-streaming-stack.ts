@@ -7,19 +7,24 @@ import * as iam from 'aws-cdk-lib/aws-iam';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
 import * as events from 'aws-cdk-lib/aws-events';
 import * as targets from 'aws-cdk-lib/aws-events-targets';
+import { StackProps } from 'aws-cdk-lib';
 
-export interface DataStreamingStackProps {
-  // TODO: define properties
-}
+export interface DataStreamingStackProps extends StackProps {
+  streamName: string;
+  handler: string;
+  firehoseRolePolicyName: string;
+  firehoseRoleName: string;
+  deliveryStreamName: string;
+};
 
 export class DataStreamingStack extends cdk.Stack {
 
-  constructor(scope: Construct, id: string, props: DataStreamingStackProps = {}) {
-    super(scope, id);
+  constructor(scope: Construct, id: string, props: DataStreamingStackProps) {
+    super(scope, id, props);
 
     // Create a new Kinesis data stream
     const dataStream = new kinesis.Stream(this, 'demo-stream', {
-      streamName: 'demo-stream',
+      streamName: props.streamName,
       shardCount: 1,
     });
     
@@ -30,70 +35,87 @@ export class DataStreamingStack extends cdk.Stack {
     });
 
     // create a Lambda function to generate data and send it to the Kinesis stream
-    const generatorFunction = new lambda.Function(this, 'generator-function', {
+    const generatorLambda = new lambda.Function(this, 'generator-function', {
       runtime: lambda.Runtime.PYTHON_3_9,
       code: lambda.Code.fromAsset('/home/lucas/repos/data-steaming-cdk/lambda/generator/package/'),
-      handler: 'index.lambda_handler',
+      handler: props.handler,
       timeout: cdk.Duration.seconds(5),
       environment: {
         KINESIS_STREAM_NAME: dataStream.streamName,
       },
     });
 
-    dataStream.grantWrite(generatorFunction);
+    dataStream.grantWrite(generatorLambda);
 
     const rule = new events.Rule(this, 'generator-rule', {
       schedule: events.Schedule.rate(cdk.Duration.seconds(60)),
     });
     
-    rule.addTarget(new targets.LambdaFunction(generatorFunction));
+    rule.addTarget(new targets.LambdaFunction(generatorLambda));
 
     // create a Lambda function to transform data in kinesis firehose
     const firehoseLambda = new lambda.Function(this, 'firehose-lambda', {
       runtime: lambda.Runtime.PYTHON_3_9,
       code: lambda.Code.fromAsset('/home/lucas/repos/data-steaming-cdk/lambda/firehose/package/'),
-      handler: 'index.lambda_handler',
-      timeout: cdk.Duration.seconds(10),
+      handler: props.handler,
+      timeout: cdk.Duration.seconds(60),
       memorySize: 512,
       initialPolicy: [
         new iam.PolicyStatement({
           effect: iam.Effect.ALLOW,
-          actions: ['logs:CreateLogGroup', 'logs:CreateLogStream', 'logs:PutLogEvents'],
+          actions: [
+            'logs:CreateLogGroup',
+            'logs:CreateLogStream',
+            'logs:PutLogEvents'],
           resources: ['*']
         }),
         new iam.PolicyStatement({
           effect: iam.Effect.ALLOW,
-          actions: ['kinesis:GetRecord', 'kinesis:PutRecords'],
+          actions: [
+            'kinesis:GetRecord',
+            'kinesis:PutRecords',
+          ],
           resources: [dataStream.streamArn]
-        })
-      ]
+        }),
+        new iam.PolicyStatement({
+          effect: iam.Effect.ALLOW,
+          actions: [
+            "firehose:DeleteDeliveryStream",
+            "firehose:PutRecord",
+            "firehose:PutRecordBatch",
+            "firehose:UpdateDestination"
+          ],
+          resources: ['*']
+        }),
+      ],
     });
 
     bucket.grantWrite(firehoseLambda);
 
-    const firehosePolicy = new iam.Policy(this, 'firehose-policy', {
-      policyName: 'firehose-role-policy',
+    const firehoseRolePolicy = new iam.Policy(this, 'firehose-role-policy', {
+      policyName: props.firehoseRolePolicyName,
       statements: [
         new iam.PolicyStatement({
           effect: iam.Effect.ALLOW,
           actions: [
             'kinesis:DescribeStream',
             'kinesis:GetShardIterator',
-            'kinesis:GetRecords'
+            'kinesis:GetRecords',
+            'lambda:InvokeFunction',
           ],
           resources: [
             '*'
           ],          
-        })
-      ]
+        }),
+      ],
     });
 
     const firehoseRole = new iam.Role(this, 'firehose-role', {
-      roleName: 'firehose-role',
+      roleName: props.firehoseRoleName,
       assumedBy: new iam.ServicePrincipal('firehose.amazonaws.com'),
     });
 
-    firehoseRole.attachInlinePolicy(firehosePolicy);
+    firehoseRole.attachInlinePolicy(firehoseRolePolicy);
 
     bucket.grantWrite(firehoseRole);
 
@@ -123,7 +145,7 @@ export class DataStreamingStack extends cdk.Stack {
           }]
         }
       },
-    });    
+    }); 
 
   }
 }
