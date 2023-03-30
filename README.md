@@ -1,27 +1,28 @@
-Data Streaming CDK Stack
+CDK Data Streaming Stack
 
-This AWS Cloud Development Kit (CDK) stack provides a serverless solution for generating, transforming, and delivering streaming data to Amazon S3.
-Description
+This AWS CDK stack sets up a data streaming architecture using Kinesis and Firehose services.
+Architecture
 
-The stack consists of several AWS resources, including:
+The stack consists of the following resources:
 
-    Kinesis Data Stream
-    Kinesis Data Firehose Delivery Stream
-    S3 Bucket
-    Lambda Functions
-    IAM Roles and Policies
+    Kinesis data stream: collects data from a Lambda function.
+    S3 bucket: stores data delivered by Kinesis Firehose.
+    Lambda function (generator): generates data and sends it to the Kinesis data stream.
+    Lambda function (firehose): transforms data before delivering it to the S3 bucket.
+    Kinesis Firehose delivery stream: delivers data to the S3 bucket.
 
-A Lambda function generates random temperature data and sends it to the Kinesis data stream. The data is then transformed by a Lambda function in the Kinesis Data Firehose delivery stream, which queries an external API for weather data from Jacksonville and appends the response to the original data. The transformed data is then delivered to an S3 bucket using Kinesis Data Firehose.
-How to Set Up the CDK Project
+Architecture Diagram
+Setup
 
-    Clone the repository: git clone <repository-url>
-    Navigate to the project directory: cd <project-folder>
+To use this CDK stack:
+
+    Clone this repository.
     Install dependencies: npm install
-    Build the project: npm run build
+    Compile the typescript code to js: npm run build
     Deploy the stack: cdk deploy
 
-Requirements
+Usage
 
-    AWS CLI
-    Node.js (v10.3.0 or later)
-    AWS CDK (v1.92.0 or later)
+Once the stack is deployed, the Lambda (generator) function will run every 60 seconds and generate data, which will be sent to the Kinesis data stream.
+
+The Lambda (firehose) function will transform the data received from Kinesis Firehose and add additional data retrieved from an external API. The transformed data will then be delivered to the S3 bucket via Kinesis Firehose.
