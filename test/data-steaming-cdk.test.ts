@@ -1,18 +1,21 @@
-// import * as cdk from 'aws-cdk-lib';
-// import { Template } from 'aws-cdk-lib/assertions';
-// import * as DataSteamingCdk from '../lib/index';
+import { Template } from 'aws-cdk-lib/assertions';
+import * as cdk from 'aws-cdk-lib';
+import { DataStreamingStack } from '../stacks/data-streaming-stack';
 
-// example test. To run these tests, uncomment this file along with the
-// example resource in lib/index.ts
-test('SQS Queue Created', () => {
-//   const app = new cdk.App();
-//   const stack = new cdk.Stack(app, "TestStack");
-//   // WHEN
-//   new DataSteamingCdk.DataSteamingCdk(stack, 'MyTestConstruct');
-//   // THEN
-//   const template = Template.fromStack(stack);
+describe('DataStreamingStack', () => {
+    test('creates a Kinesis Data Firehose delivery stream', () => {
+      const app = new cdk.App();
+      const stack = new DataStreamingStack(app, 'MyTestStack', {
+        streamName: 'demo-stream',
+        handler: 'index.lambda_handler',
+        firehoseRolePolicyName: 'firehose-role-policy',
+        firehoseRoleName: 'firehose-role',
+        deliveryStreamName: 'demo-delivery-stream',
+      });
 
-//   template.hasResourceProperties('AWS::SQS::Queue', {
-//     VisibilityTimeout: 300
-//   });
+    const template = Template.fromStack(stack);
+    template.hasResourceProperties('AWS::KinesisFirehose::DeliveryStream', {
+        DeliveryStreamName: "firehose-delivery-stream"
+    });
+  });
 });
